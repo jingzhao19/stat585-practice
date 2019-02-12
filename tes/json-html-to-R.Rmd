@@ -1,0 +1,39 @@
+---
+title: "JSON and HTML into R"
+author: "jing zhao"
+date: "February 11, 2019"
+output: html_document
+---
+##connvert r to json or from json to r.
+```{r}
+library(tidyverse)
+library(jsonlite)
+##filter first three rows data and convert it to Json
+mtcars %>% filter(row_number()<=3) %>% toJSON(pretty=T)
+##convert Json to R
+char <- '[
+ {"P0010001":710231,"NAME":"Alaska","state":"02"},
+ {"P0010001":4779736,"NAME":"Alabama","state":"01"},
+ {"P0010001":2915918,"NAME":"Arkansas","state":"05"},
+ {"P0010001":6392017,"NAME":"Arizona","state":"04"},
+ {"P0010001":37253956,"NAME":"California","state":"06"}
+ ]'
+convr<-fromJSON(char)
+##another dataset
+sur2010 <- fromJSON("https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC&RANK=1:100")
+## matrix
+sur2010
+## convert matrix to dataframe.
+sur2010[-1,] %>% as_tibble() %>% set_names(sur2010[1,]) %>% mutate_at(2:6, as.numeric)
+```
+##convert html into R
+```{r}
+library(rvest)
+library(xml2)
+url <- "https://www.nytimes.com/elections/results/iowa-house-district-4"
+doc <- read_html(url)
+tables <- html_table(doc,fill=TRUE)
+head(tables) ## is a list
+##we can extract the data by following code.
+head(tables[[2]])
+```
